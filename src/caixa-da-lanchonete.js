@@ -16,46 +16,47 @@ class CaixaDaLanchonete {
             {codigo: 'debito', descricao: 'Cartão de Débito'}
         ]
         }
+        calcularValorDaCompra(metodoDePagamento, itens) {
+            const itensPrincipaisExtras = ['cafe', 'sanduiche'];
+            const possuiItensPrincipaisExtras = itens.some(item => itensPrincipaisExtras.includes(item));
+    
+            if ((itens.some(item => item.codigo === 'chantily' || item.codigo === 'queijo')) && !possuiItensPrincipaisExtras){
+                return "Não é possível adicionar extras sem os itens principais";
+            }
+    
+            if (this.metodoDePagamento !=="Dinheiro" && this.metodoDePagamento !=="Cartão de Crédito" && this.metodoDePagamento !=="Cartão de Débito" && !this.metodoDePagamento){
+                return "Método de pagamento inválido";
+            }
+    
+            if (itens.length === 0) {
+                return "Não há itens no carrinho de compra!";
+            }
+    
+            let valorTotal = 0;
+    
+            for (const item of itens) {
+                const [codigo, quantidade] = item.split(',');
+                const menuItem = this.cardapio.find(menuItem => menuItem.codigo === codigo);
+                if (!menuItem) {
+                    return "Item inválido";
+                }
+                if (quantidade <= 0) {
+                    return "Quantidade inválida!";
+                }
+                valorTotal += menuItem.valor * quantidade;
+            }
+    
+            if (metodoDePagamento === 'dinheiro') {
+                valorTotal -= valorTotal * 0.05 ;
+            }
+    
+            if (metodoDePagamento === 'credito') {
+                valorTotal += valorTotal * 0.03 ;
+            }
+            return valorTotal;
+        };
     }
 
-    calcularValorDaCompra(metodoDePagamento, itens) {
-        const itensPrincipaisExtras = ['cafe', 'sanduiche'];
-        const possuiItensPrincipaisExtras = itens.some(item => itensPrincipaisExtras.includes(item));
-
-        if ((itens.some(item => item.codigo === 'chantily' || item.codigo === 'queijo')) && !possuiItensPrincipaisExtras){
-            return "Não é possível adicionar extras sem os itens principais";
-        }
-
-        if (this.metodoDePagamento !=="Dinheiro" && this.metodoDePagamento !=="Cartão de Crédito" && this.metodoDePagamento !=="Cartão de Débito" && !this.metodoDePagamento){
-            return "Método de pagamento inválido";
-        }
-
-        if (itens.length === 0) {
-            return "Não há itens no carrinho de compra!";
-        }
-
-        let valorTotal = 0;
-
-        for (const item of itens) {
-            const [codigo, quantidade] = item.split(',');
-            const menuItem = this.cardapio.find(menuItem => menuItem.codigo === codigo);
-            if (!menuItem) {
-                return "Item inválido";
-            }
-            if (quantidade <= 0) {
-                return "Quantidade inválida!";
-            }
-            valorTotal += menuItem.valor * quantidade;
-        }
-
-        if (metodoDePagamento === 'dinheiro') {
-            valorTotal -= valorTotal * 0.05 ;
-        }
-
-        if (metodoDePagamento === 'credito') {
-            valorTotal += valorTotal * 0.03 ;
-        }
-        return valorTotal;
-    };
+    
 
 export { CaixaDaLanchonete };
