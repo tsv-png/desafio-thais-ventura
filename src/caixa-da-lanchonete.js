@@ -2,37 +2,47 @@ class CaixaDaLanchonete {
      constructor(Cardapio, MetodoDePagamento) {
         this.cardapio = new Cardapio;
         this.metodoDePagamento = new MetodoDePagamento;
-        this.chantilly = false;
-        this.queijo = false;
      }
 
     calcularValorDaCompra(metodoDePagamento, itens) {
-        for (const item of itens) {
-            if(item.codigo === 'chantilly') {
-                this.chantilly = true;
-            }
-            if(item.codigo === 'queijo') {
-                this.queijo = true;
-            }
+        const itensPrincipaisExtras = ['cafe', 'sanduiche'];
+        const possuiItensPrincipaisExtras = itens.some(item => itensPrincipaisExtras.includes(item));
+
+    
+        if ((itens.some(item => item.codigo === 'chantily' || item.codigo === 'queijo')) && !possuiItensPrincipaisExtras){
+            return "Não é possível adicionar extras sem os itens principais";
         }
+
         if (this.metodoDePagamento !=="Dinheiro" && this.metodoDePagamento !=="Cartão de Crédito" && this.metodoDePagamento !=="Cartão de Débito" && !this.metodoDePagamento) {
             return "Método de pagamento inválido";
         }
+
         if (itens.length === 0) {
             return "Não há itens no carrinho de compra!";
         }
+
         let valorTotal = 0;
+
+        for (const item of itens) {
+            const [codigo, quantidade] = item.split(',');
+            const menuItem = this.cardapio.itens.find(menuItem => menuItem.codigo === codigo);
+            if (!menuItem) {
+                return "Item inválido";
+            }
+            if (quantidade <= 0) {
+                return "Quantidade inválida!";
+            }
+            valorTotal += menuItem.valor * quantidade;
+        }
+
         if (metodoDePagamento === 'dinheiro') {
             valorTotal -= valorTotal * 0.05 ;
         }
+
         if (metodoDePagamento === 'credito') {
             valorTotal += valorTotal * 0.03 ;
         }
-       const itensPrinciaisExtras = ['cafe', 'sanduiche'];
-       const possuiItensPrincipaisExtras = itens.some(item => itensPrinciaisExtras.includes(item));
-       if ((this.chantilly || this.queijo) && !possuiItensPrincipaisExtras){
-        return "Não é possível adicionar extras sem os itens principais";
-    }
+        return valorTotal;
     }
 }
  class Cardapio {
@@ -59,5 +69,6 @@ class MetodoDePagamento {
         ]
     }
 }
+
 
 export { CaixaDaLanchonete };
