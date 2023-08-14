@@ -11,26 +11,24 @@ class CaixaDaLanchonete {
             {codigo: 'combo2', descricao: '1 Café e 1 Sanduíche', valor: 7.50}
         ]
         this.metodos = [
-            {codigo: 'dinheiro', descricao: 'Dinheiro'},
-            {codigo: 'credito', descricao: 'Cartão de Crédito'},
-            {codigo: 'debito', descricao: 'Cartão de Débito'}
+            {codigo: 'dinheiro'},
+            {codigo: 'credito'},
+            {codigo: 'debito'}
         ]
         }
         calcularValorDaCompra(metodoDePagamento, itens) {
-            const itensPrincipaisExtras = ['cafe', 'sanduiche'];
-            const possuiItensPrincipaisExtras = itens.some(item => itensPrincipaisExtras.includes(item));
-    
-            if ((itens.some(item => item.codigo === 'chantily' || item.codigo === 'queijo')) && !possuiItensPrincipaisExtras){
-                return "Não é possível adicionar extras sem os itens principais";
+
+            if((itens.some(item => item.startsWith("chantily")) && !itens.some(item => item.startsWith("cafe"))) || (itens.some(item => item.startsWith("queijo")) && !itens.some(item => item.startsWith("sanduiche")))) {
+                return "Item extra não pode ser pedido sem o principal";
             }
-    
-            if (this.metodoDePagamento !=="Dinheiro" && this.metodoDePagamento !=="Cartão de Crédito" && this.metodoDePagamento !=="Cartão de Débito" && !this.metodoDePagamento){
-                return "Método de pagamento inválido";
-            }
-    
+            
             if (itens.length === 0) {
                 return "Não há itens no carrinho de compra!";
             }
+            if ((metodoDePagamento !== "dinheiro" && metodoDePagamento !== "credito" && metodoDePagamento !== "debito") || !metodoDePagamento) {
+                return "Forma de pagamento inválida!";
+              }
+    
     
             let valorTotal = 0;
     
@@ -38,7 +36,7 @@ class CaixaDaLanchonete {
                 const [codigo, quantidade] = item.split(',');
                 const menuItem = this.cardapio.find(menuItem => menuItem.codigo === codigo);
                 if (!menuItem) {
-                    return "Item inválido";
+                    return "Item inválido!";
                 }
                 if (quantidade <= 0) {
                     return "Quantidade inválida!";
@@ -53,7 +51,7 @@ class CaixaDaLanchonete {
             if (metodoDePagamento === 'credito') {
                 valorTotal += valorTotal * 0.03 ;
             }
-            return valorTotal;
+            return "R$ " + valorTotal.toFixed(2).replace(".", ",");
         };
     }
 
